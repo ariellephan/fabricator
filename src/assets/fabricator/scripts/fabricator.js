@@ -1,4 +1,5 @@
 require('./prism');
+import '../styles/fabricator.scss';
 
 /**
  * Global `fabricator` object

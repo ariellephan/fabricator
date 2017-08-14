@@ -2,7 +2,12 @@ const path = require('path');
 const webpack = require('webpack');
 const assembler = require('fabricator-assemble');
 const WebpackOnBuildPlugin = require('on-build-webpack');
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 
+/**
+ * Define fabricator build config
+ */
 const config = {
   dev: process.env.NODE_ENV === "development",
   styles: {
@@ -43,6 +48,13 @@ const config = {
   dest: 'dist',
 };
 
+const extractSass = new ExtractTextPlugin({
+    filename: (getPath) => {
+      return getPath("[name].[contenthash].css").replace('scripts', 'styles');
+    },
+    disable: config.dev
+});
+
 /**
  * Define plugins based on environment
  * @param {boolean} isDev If in development mode
@@ -51,13 +63,15 @@ const config = {
 function getPlugins(isDev) {
 
   const plugins = [
+    new CleanWebpackPlugin([config.dest]),
     new webpack.DefinePlugin({}),
     new WebpackOnBuildPlugin(function() {
       assembler({
         logErrors: config.dev,
         dest: config.dest,
       });
-    })
+    }),
+    extractSass
   ];
 
   if (isDev) {
@@ -88,9 +102,31 @@ function getLoaders() {
 			test: /\.js$/,
 			exclude: /(node_modules|prism\.js)/,
 			loader: 'babel-loader'
-		}, {
+		},
+    {
       test: /(\.jpg|\.png)$/,
       loader: 'url-loader?limit=10000',
+    },
+    {
+      test: /\.scss$/,
+      use: extractSass.extract({
+          use: [{
+              loader: "css-loader",
+              options: {
+                sourceMap: true,
+                minimize: true
+              }
+          }, {
+            loader: "postcss-loader",
+            options: {
+              sourceMap: true
+            }
+          }, {
+              loader: "sass-loader"
+          }],
+          // use style-loader in development
+          fallback: "style-loader"
+      })
     }
   ];
 
@@ -99,6 +135,7 @@ function getLoaders() {
 }
 
 module.exports = {
+  devtool: "source-map",
   entry: {
     'fabricator/scripts/f': config.scripts.fabricator.src,
     'toolkit/scripts/toolkit': config.scripts.toolkit.src,
