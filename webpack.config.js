@@ -4,43 +4,24 @@ const assembler = require('fabricator-assemble');
 const WebpackOnBuildPlugin = require('on-build-webpack');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const ImageminPlugin = require('imagemin-webpack-plugin').default;
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 /**
  * Define fabricator build config
  */
 const config = {
   dev: process.env.NODE_ENV === "development",
-  styles: {
-    browsers: 'last 1 version',
-    fabricator: {
-      src: 'src/assets/fabricator/styles/fabricator.scss',
-      dest: 'dist/assets/fabricator/styles',
-      watch: 'src/assets/fabricator/styles/**/*.scss',
-    },
-    toolkit: {
-      src: 'src/assets/toolkit/styles/toolkit.scss',
-      dest: 'dist/assets/toolkit/styles',
-      watch: 'src/assets/toolkit/styles/**/*.scss',
-    },
-  },
   scripts: {
     fabricator: {
-      src: './src/assets/fabricator/scripts/fabricator.js',
-      dest: 'dist/assets/fabricator/scripts',
-      watch: 'src/assets/fabricator/scripts/**/*',
+      src: './src/assets/fabricator/scripts/fabricator.js'
     },
     toolkit: {
-      src: './src/assets/toolkit/scripts/toolkit.js',
-      dest: 'dist/assets/toolkit/scripts',
-      watch: 'src/assets/toolkit/scripts/**/*',
+      src: './src/assets/toolkit/scripts/toolkit.js'
     },
   },
   images: {
-    toolkit: {
-      src: ['src/assets/toolkit/images/**/*', 'src/favicon.ico'],
-      dest: 'dist/assets/toolkit/images',
-      watch: 'src/assets/toolkit/images/**/*',
-    },
+    toolkit: ['src/assets/toolkit/images/**/*', 'src/favicon.ico']
   },
   templates: {
     watch: 'src/**/*.{html,md,json,yml}',
@@ -50,10 +31,16 @@ const config = {
 
 const extractSass = new ExtractTextPlugin({
     filename: (getPath) => {
-      return getPath("[name].[contenthash].css").replace('scripts', 'styles');
+      return getPath("[name].css").replace('scripts', 'styles');
     },
     disable: config.dev
 });
+
+const toolkitImages = (() => {
+  return config.images.toolkit.map(from => {
+    return { from }
+  });
+})();
 
 /**
  * Define plugins based on environment
@@ -71,11 +58,18 @@ function getPlugins(isDev) {
         dest: config.dest,
       });
     }),
-    extractSass
+    extractSass,
+    new CopyWebpackPlugin(toolkitImages),
+    new ImageminPlugin({ test: /\.(jpe?g|png|gif|svg)$/i })
   ];
 
   if (isDev) {
     plugins.push(new webpack.NoErrorsPlugin());
+    plugins.push(function(compiler) {
+      compiler.plugin("after-compiler", function() {
+        this.fileDependencies.push(config.templates.watch);
+      });
+    });
   } else {
     plugins.push(new webpack.optimize.UglifyJsPlugin({
       minimize: true,
@@ -103,10 +97,6 @@ function getLoaders() {
 			exclude: /(node_modules|prism\.js)/,
 			loader: 'babel-loader'
 		},
-    {
-      test: /(\.jpg|\.png)$/,
-      loader: 'url-loader?limit=10000',
-    },
     {
       test: /\.scss$/,
       use: extractSass.extract({
@@ -136,12 +126,17 @@ function getLoaders() {
 
 module.exports = {
   devtool: "source-map",
+  devServer: {
+    contentBase: path.resolve(__dirname, config.dest),
+    open: true
+  },
   entry: {
     'fabricator/scripts/f': config.scripts.fabricator.src,
     'toolkit/scripts/toolkit': config.scripts.toolkit.src,
   },
   output: {
     path: path.resolve(__dirname, config.dest, 'assets'),
+    publicPath: '/assets/',
     filename: '[name].js',
   },
   devtool: 'source-map',
