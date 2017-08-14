@@ -1,22 +1,18 @@
 const assembler = require('fabricator-assemble');
 const browserSync = require('browser-sync');
-const csso = require('gulp-csso');
+const plugins = require('gulp-load-plugins');
 const del = require('del');
 const gulp = require('gulp');
-const gutil = require('gulp-util');
-const gulpif = require('gulp-if');
-const imagemin = require('gulp-imagemin');
-const prefix = require('gulp-autoprefixer');
-const rename = require('gulp-rename');
 const reload = browserSync.reload;
 const runSequence = require('run-sequence');
-const sass = require('gulp-sass');
-const sourcemaps = require('gulp-sourcemaps');
 const webpack = require('webpack');
+
+// Load all Gulp plugins into one variable
+const $ = plugins();
 
 // configuration
 const config = {
-  dev: gutil.env.dev,
+  dev: $.util.env.dev,
   styles: {
     browsers: 'last 1 version',
     fabricator: {
@@ -63,27 +59,27 @@ gulp.task('clean', del.bind(null, [config.dest]));
 // styles
 gulp.task('styles:fabricator', () => {
   gulp.src(config.styles.fabricator.src)
-  .pipe(sourcemaps.init())
-  .pipe(sass().on('error', sass.logError))
-  .pipe(prefix('last 1 version'))
-  .pipe(gulpif(!config.dev, csso()))
-  .pipe(rename('f.css'))
-  .pipe(sourcemaps.write())
+  .pipe($.sourcemaps.init())
+  .pipe($.sass().on('error', $.sass.logError))
+  .pipe($.autoprefixer('last 1 version'))
+  .pipe($.if(!config.dev, $.csso()))
+  .pipe($.rename('f.css'))
+  .pipe($.sourcemaps.write())
   .pipe(gulp.dest(config.styles.fabricator.dest))
-  .pipe(gulpif(config.dev, reload({ stream: true })));
+  .pipe($.if(config.dev, reload({ stream: true })));
 });
 
 gulp.task('styles:toolkit', () => {
   gulp.src(config.styles.toolkit.src)
-  .pipe(gulpif(config.dev, sourcemaps.init()))
-  .pipe(sass({
+  .pipe($.if(config.dev, $.sourcemaps.init()))
+  .pipe($.sass({
     includePaths: './node_modules',
-  }).on('error', sass.logError))
-  .pipe(prefix('last 1 version'))
-  .pipe(gulpif(!config.dev, csso()))
-  .pipe(gulpif(config.dev, sourcemaps.write()))
+  }).on('error', $.sass.logError))
+  .pipe($.autoprefixer('last 1 version'))
+  .pipe($.if(!config.dev, $.csso()))
+  .pipe($.if(config.dev, $.sourcemaps.write()))
   .pipe(gulp.dest(config.styles.toolkit.dest))
-  .pipe(gulpif(config.dev, reload({ stream: true })));
+  .pipe($.if(config.dev, reload({ stream: true })));
 });
 
 gulp.task('styles', ['styles:fabricator', 'styles:toolkit']);
@@ -95,12 +91,12 @@ const webpackConfig = require('./webpack.config')(config);
 gulp.task('scripts', (done) => {
   webpack(webpackConfig, (err, stats) => {
     if (err) {
-      gutil.log(gutil.colors.red(err()));
+      $.util.log($.util.colors.red(err()));
     }
     const result = stats.toJson();
     if (result.errors.length) {
       result.errors.forEach((error) => {
-        gutil.log(gutil.colors.red(error));
+        $.util.log($.util.colors.red(error));
       });
     }
     done();
@@ -111,7 +107,7 @@ gulp.task('scripts', (done) => {
 // images
 gulp.task('images', ['favicon'], () => {
   return gulp.src(config.images.toolkit.src)
-    .pipe(imagemin())
+    .pipe($.imagemin())
     .pipe(gulp.dest(config.images.toolkit.dest));
 });
 

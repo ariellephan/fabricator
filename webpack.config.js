@@ -38,17 +38,16 @@ function getPlugins(isDev) {
  */
 function getLoaders() {
 
-  const loaders = [{
-    test: /(\.js)/,
-    exclude: /(node_modules)/,
-    loaders: ['babel'],
-  }, {
-    test: /(\.jpg|\.png)$/,
-    loader: 'url-loader?limit=10000',
-  }, {
-    test: /\.json/,
-    loader: 'json-loader',
-  }];
+  const loaders = [
+    {
+			test: /\.js$/,
+			exclude: /(node_modules|prism\.js)/,
+			loader: 'babel-loader'
+		}, {
+      test: /(\.jpg|\.png)$/,
+      loader: 'url-loader?limit=10000',
+    }
+  ];
 
   return loaders;
 

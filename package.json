@@ -44,6 +44,7 @@
     "gulp-csso": "^2.0.0",
     "gulp-if": "^2.0.1",
     "gulp-imagemin": "^3.0.1",
+    "gulp-load-plugins": "^1.5.0",
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^2.3.2",
     "gulp-sourcemaps": "^1.6.0",
@@ -51,6 +52,10 @@
     "imports-loader": "^0.6.5",
     "run-sequence": "^1.2.1",
     "script-loader": "^0.7.0",
-    "webpack": "^1.13.1"
+    "webpack": "^3.5.4"
+  },
+  "dependencies": {
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "foundation-sites": "^6.4.2"
   }
 }
