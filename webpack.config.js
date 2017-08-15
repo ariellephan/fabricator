@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const { config, assembler } = require('./fabricator.config.js');
 const WebpackPreBuildPlugin = require('pre-build-webpack');
+const WebpackOnBuildPlugin = require('on-build-webpack');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ImageminPlugin = require('imagemin-webpack-plugin').default;
@@ -10,7 +11,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const extractSass = new ExtractTextPlugin({
     filename: (getPath) => {
-      return getPath("[name].css").replace('scripts', 'styles');
+      return getPath("[name].[contentHash].css").replace('scripts', 'styles');
     },
     disable: config.dev
 });
@@ -31,7 +32,7 @@ function getPlugins(isDev) {
   const plugins = [
     new CleanWebpackPlugin([config.dest]),
     new webpack.DefinePlugin({}),
-    new WebpackPreBuildPlugin(assembler),
+    new WebpackOnBuildPlugin(assembler),
     extractSass,
     new CopyWebpackPlugin(toolkitImages),
     new ImageminPlugin({ test: /\.(jpe?g|png|gif|svg)$/i })
@@ -106,7 +107,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, config.dest, 'assets'),
     publicPath: '/assets/',
-    filename: '[name].js',
+    filename: '[name].[chunkhash].js',
   },
   devtool: 'source-map',
   plugins: getPlugins(config.dev),
