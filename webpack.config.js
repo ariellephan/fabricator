@@ -1,33 +1,12 @@
 const path = require('path');
 const webpack = require('webpack');
-const assembler = require('fabricator-assemble');
-const WebpackOnBuildPlugin = require('on-build-webpack');
+const { config, assembler } = require('./fabricator.config.js');
+const WebpackPreBuildPlugin = require('pre-build-webpack');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ImageminPlugin = require('imagemin-webpack-plugin').default;
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-/**
- * Define fabricator build config
- */
-const config = {
-  dev: process.env.NODE_ENV === "development",
-  scripts: {
-    fabricator: {
-      src: './src/assets/fabricator/scripts/fabricator.js'
-    },
-    toolkit: {
-      src: './src/assets/toolkit/scripts/toolkit.js'
-    },
-  },
-  images: {
-    toolkit: ['src/assets/toolkit/images/**/*', 'src/favicon.ico']
-  },
-  templates: {
-    watch: 'src/**/*.{html,md,json,yml}',
-  },
-  dest: 'dist',
-};
 
 const extractSass = new ExtractTextPlugin({
     filename: (getPath) => {
@@ -52,12 +31,7 @@ function getPlugins(isDev) {
   const plugins = [
     new CleanWebpackPlugin([config.dest]),
     new webpack.DefinePlugin({}),
-    new WebpackOnBuildPlugin(function() {
-      assembler({
-        logErrors: config.dev,
-        dest: config.dest,
-      });
-    }),
+    new WebpackPreBuildPlugin(assembler),
     extractSass,
     new CopyWebpackPlugin(toolkitImages),
     new ImageminPlugin({ test: /\.(jpe?g|png|gif|svg)$/i })
@@ -65,11 +39,6 @@ function getPlugins(isDev) {
 
   if (isDev) {
     plugins.push(new webpack.NoErrorsPlugin());
-    plugins.push(function(compiler) {
-      compiler.plugin("after-compiler", function() {
-        this.fileDependencies.push(config.templates.watch);
-      });
-    });
   } else {
     plugins.push(new webpack.optimize.UglifyJsPlugin({
       minimize: true,
