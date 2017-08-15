@@ -1,5 +1,4 @@
 const assembler = require('fabricator-assemble');
-
 const fabricator = {
   config: {
     dev: process.env.NODE_ENV === "development",
@@ -19,13 +18,16 @@ const fabricator = {
     },
     dest: 'dist'
   },
+  assetMap: [],
   assembler: function (stats) {
-    const assetMap = createHashMap(stats.toJson().assets);
+    if (stats) {
+      fabricator.assetMap = createHashMap(stats.toJson().assets);
+    }
     console.log('Assembling templates.');
     assembler({
       logErrors: fabricator.config.dev,
       dest: fabricator.config.dest,
-      buildData: assetMap
+      buildData: fabricator.assetMap
     });
   }
 }

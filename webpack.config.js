@@ -1,13 +1,13 @@
 const path = require('path');
 const webpack = require('webpack');
 const { config, assembler } = require('./fabricator.config.js');
-const WebpackPreBuildPlugin = require('pre-build-webpack');
 const WebpackOnBuildPlugin = require('on-build-webpack');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ImageminPlugin = require('imagemin-webpack-plugin').default;
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-
+const watchTemplate = require('./watch-template.js');
+let isWatching = false;
 
 const extractSass = new ExtractTextPlugin({
     filename: (getPath) => {
@@ -32,7 +32,13 @@ function getPlugins(isDev) {
   const plugins = [
     new CleanWebpackPlugin([config.dest]),
     new webpack.DefinePlugin({}),
-    new WebpackOnBuildPlugin(assembler),
+    new WebpackOnBuildPlugin(function (stats) {
+      assembler(stats);
+      if (!isWatching) {
+        isWatching = true;
+        watchTemplate.watch(assembler);
+      }
+    }),
     extractSass,
     new CopyWebpackPlugin(toolkitImages),
     new ImageminPlugin({ test: /\.(jpe?g|png|gif|svg)$/i })
@@ -98,7 +104,7 @@ module.exports = {
   devtool: "source-map",
   devServer: {
     contentBase: path.resolve(__dirname, config.dest),
-    open: true
+    watchContentBase: true
   },
   entry: {
     'fabricator/scripts/f': config.scripts.fabricator.src,

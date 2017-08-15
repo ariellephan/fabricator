@@ -6,9 +6,7 @@
   "homepage": "http://fbrctr.github.io/",
   "scripts": {
     "build": "webpack --define process.env.NODE_ENV='production'",
-    "start": "concurrently --kill-others \"npm run server\" \"npm run watch\"",
-    "watch": "node watch-template.js",
-    "server": "webpack-dev-server",
+    "start": "webpack-dev-server",
     "test": "npm run build"
   },
   "keywords": [
@@ -35,7 +33,6 @@
     "babel-loader": "^6.4.1",
     "babel-preset-es2015": "^6.24.1",
     "clean-webpack-plugin": "^0.1.16",
-    "concurrently": "^3.5.0",
     "copy-webpack-plugin": "^4.0.1",
     "css-loader": "^0.28.4",
     "eslint": "^2.13.1",
@@ -48,7 +45,6 @@
     "node-sass": "^4.5.3",
     "on-build-webpack": "^0.1.0",
     "postcss-loader": "^2.0.6",
-    "pre-build-webpack": "^0.1.0",
     "sass-loader": "^6.0.6",
     "script-loader": "^0.7.0",
     "style-loader": "^0.18.2",
