@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>{{title}}</title>
+
+	{{#unless dev}}{{#if fabricator}}<link rel="stylesheet" href="{{baseurl}}/assets/{{[fabricator/scripts/f].css}}">{{/if}}{{/unless}}
+
+	<!-- toolkit styles -->
+	{{#unless dev}}<link rel="stylesheet" href="{{baseurl}}/assets/{{[toolkit/scripts/toolkit].css}}">{{/unless}}
+	<!-- /toolkit styles -->
+
+</head>
+<body class="styleguide">
+
+	{{#if fabricator}}
+		{{> f-icons}}
+    <div class="off-canvas-wrapper grid-x" data-sticky-container>
+      <div class="cell large-3">
+        <div>
+    		{{> f-menu}}
+      </div>
+      </div>
+		<div class="lsg-container off-canvas-content cell large-9" data-off-canvas-content>
+			{{> f-control-bar}}
+	{{/if}}
+
+
+	{% body %}
+
+
+	{{#if fabricator}}
+      </div>
+  </div>
+	<script src="{{baseurl}}/assets/{{[fabricator/scripts/f].js}}"></script>
+	{{/if}}
+
+	<!-- toolkit scripts -->
+	<script src="{{baseurl}}/assets/{{[toolkit/scripts/toolkit].js}}"></script>
+	<!-- /toolkit scripts -->
+
+</body>
+</html>

@@ -1,5 +1,6 @@
 ---
 fabricator: true
+layout: styleguide
 ---
 
 <h1 data-f-toggle="labels">Pages</h1>
@@ -8,7 +9,7 @@ fabricator: true
 {{#each views.pages.items}}
 
 	<li>
-		<a href="pages/{{@key}}.html" class="f-item-heading" target="_blank">{{name}}</a>
+		<a href="/pages/{{@key}}.html" class="f-item-heading">{{name}}</a>
 	</li>
 
 {{/each}}

@@ -1,0 +1,70 @@
+---
+title: Overview | Fabricator
+fabricator: true
+layout: styleguide
+---
+
+<h1>Overview</h1>
+
+<p>This UI toolkit is a highly-modular design system for rapid web page development. It contains different materials that can be assembled into more complex page layouts.</p>
+
+<p>This guide contains real working examples, code snippets, documentation, and style guidelines.</p>
+
+<h2>Usage</h2>
+
+<p>This project is configured to compile it's stylesheets and javascript into a cache busted  bundle and injected into the static html.</p>
+
+<p>The production build script will output each page as a .cshtml partial wrapped in the partials.cshtml layout found at <code>./src/views/layouts/partials.cshtml</code></p>
+
+<h2>Taxonomy</h2>
+
+<h3>Elements</h3>
+
+<p>Single html tags with one to many states or styles. Can be used in components, views, or templates.</p>
+
+<h3>Components</h3>
+
+<p>A grouping of elements in a portable collection that can contain self-instantiating JavaScript.</p>
+
+<h3>Views</h3>
+
+<p>Group together components and elements into a unique portable component.</p>
+
+<h3>Containers</h3>
+
+<p>Contain modules, components, and elements and provide structure for the page.</p>
+
+<h3>Templates</h3>
+
+<p>Pieces containers together for a full-page structure.</p>
+
+<h3>Pages</h3>
+
+<p>Pages are specific instances of templates that show what a UI looks like with real representative content in place.</p>
+
+<h2>Color</h2>
+
+<div class="f-color-chips grid-x align-stretch grid-margin-x small-up-2 medium-up-4 large-up-5">
+{{#each colors}}
+  <div class="cell">
+  	<div class="card grid-y">
+      <div class="card-color cell shrink" style="background-color: {{this}}"></div>
+      <div class="card-section cell shrink">
+    		<p class="lead">${{@key}}</p>
+    		<p>{{this}}</p>
+      </div>
+  	</div>
+  </div>
+{{/each}}
+</div>
+
+<h2>Typography</h2>
+
+<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam enim sunt sapiente molestias, sed dicta inventore consectetur beatae asperiores, aliquid laboriosam animi, praesentium repudiandae et, quam saepe sint cupiditate reiciendis.</p>
+
+<h1>Heading Level 1</h1>
+<h2>Heading Level 2</h2>
+<h3>Heading Level 3</h3>
+<h4>Heading Level 4</h4>
+<h5>Heading Level 5</h5>
+<h6>Heading Level 6</h6>

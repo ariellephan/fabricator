@@ -4,16 +4,37 @@
  * Class selectors are namespaced with "f-"
  */
 
-$settings: (
-	theme: light,
-	accent: hsl(0, 0%, 46%),
-	menu-width: 14rem
-);
-
 @import 'partials/variables';
 @import 'partials/code';
 @import 'partials/color-chips';
 @import 'partials/controls';
 @import 'partials/item';
 @import 'partials/layout';
-@import 'partials/menu';
+// @import 'partials/menu';
+
+.f-control-bar {
+  background: map-get($colors, menu-background);
+}
+
+.lsg-container {
+  padding: 0 20px;
+}
+
+.f-color-chips {
+  > .cell {
+    margin-bottom: 1rem;
+  }
+  .card {
+    height: 100%;
+    margin: 0;
+    .card-color {
+      border-bottom: 1px solid #ccc;
+      min-height: 70px;
+      &:before {
+        content: "";
+        padding-top: 50%;
+        display: block;
+      }
+    }
+  }
+}
