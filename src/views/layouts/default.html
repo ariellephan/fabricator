@@ -8,10 +8,10 @@
 
 	<title>{{title}}</title>
 
-	{{#if fabricator}}<link rel="stylesheet" href="{{#if baseurl}}{{ baseurl }}/{{/if}}assets/{{ [fabricator/scripts/f].css }}">{{/if}}
+	{{#unless dev}}{{#if fabricator}}<link rel="stylesheet" href="{{#if baseurl}}{{ baseurl }}/{{/if}}assets/{{ [fabricator/scripts/f].css }}">{{/if}}{{/unless}}
 
 	<!-- toolkit styles -->
-	<link rel="stylesheet" href="{{#if baseurl}}{{ baseurl }}/{{/if}}assets/{{ [toolkit/scripts/toolkit].css }}">
+	{{#unless dev}}<link rel="stylesheet" href="{{#if baseurl}}{{ baseurl }}/{{/if}}assets/{{ [toolkit/scripts/toolkit].css }}">{{/unless}}
 	<!-- /toolkit styles -->
 
 </head>

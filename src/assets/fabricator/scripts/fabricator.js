@@ -1,8 +1,8 @@
 'use strict';
 import $ from 'jquery';
-import './lib/foundation-explicit-pieces';
-require('./prism');
-require('../styles/fabricator.scss');
+import 'foundation-sites';
+import './prism.js';
+import '../styles/fabricator.scss';
 
 /**
  * Global `fabricator` object

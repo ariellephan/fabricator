@@ -1,19 +1,21 @@
 const path = require('path');
 const webpack = require('webpack');
-const { config, assembler } = require('./fabricator.config.js');
+const { config, assembler } = require('./fabricator.config.js')();
 const WebpackOnBuildPlugin = require('on-build-webpack');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ImageminPlugin = require('imagemin-webpack-plugin').default;
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const watchTemplate = require('./watch-template.js');
 let isWatching = false;
+const isProd = process.env.NODE_ENV === 'production';
 
 const extractSass = new ExtractTextPlugin({
     filename: (getPath) => {
       return getPath("[name].[contentHash].css").replace('scripts', 'styles');
     },
-    disable: config.dev
+    disable: !isProd
 });
 
 const toolkitImages = (() => {
@@ -27,14 +29,17 @@ const toolkitImages = (() => {
  * @param {boolean} isDev If in development mode
  * @return {Array}
  */
-function getPlugins(isDev) {
-
+function getPlugins() {
   const plugins = [
-    new CleanWebpackPlugin([config.dest]),
-    new webpack.DefinePlugin({}),
+    new CleanWebpackPlugin(['dist']),
+    new webpack.DefinePlugin({
+      'process.env': {
+          'NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+      }
+    }),
     new WebpackOnBuildPlugin(function (stats) {
       assembler(stats);
-      if (!isWatching) {
+      if (!isWatching && !isProd) {
         isWatching = true;
         watchTemplate.watch(assembler);
       }
@@ -44,15 +49,18 @@ function getPlugins(isDev) {
     new ImageminPlugin({ test: /\.(jpe?g|png|gif|svg)$/i })
   ];
 
-  if (isDev) {
-    plugins.push(new webpack.NoErrorsPlugin());
+  if (!isProd) {
+    plugins.push(new webpack.NoEmitOnErrorsPlugin());
   } else {
-    plugins.push(new webpack.optimize.UglifyJsPlugin({
+    plugins.push(new UglifyJsPlugin({
       minimize: true,
       sourceMap: false,
       compress: {
         warnings: false,
       },
+      uglifyOptions: {
+        ecma: 8
+      }
     }));
   }
 
@@ -71,7 +79,12 @@ function getLoaders() {
     {
 			test: /\.js$/,
 			exclude: /(node_modules|prism\.js)/,
-			loader: 'babel-loader'
+      use: {
+  	     loader: 'babel-loader',
+         options: {
+           presets: ['es2015']
+         }
+       }
 		},
     {
       test: /\.scss$/,
@@ -88,7 +101,10 @@ function getLoaders() {
               sourceMap: true
             }
           }, {
-              loader: "sass-loader"
+              loader: "sass-loader",
+              options: {
+                includePaths: ["node_modules/foundation-sites/scss"]
+              }
           }],
           // use style-loader in development
           fallback: "style-loader"
@@ -107,8 +123,8 @@ module.exports = {
     watchContentBase: true
   },
   entry: {
-    'fabricator/scripts/f': config.scripts.fabricator.src,
-    'toolkit/scripts/toolkit': config.scripts.toolkit.src,
+    'fabricator/scripts/f': config.scripts.fabricator,
+    'toolkit/scripts/toolkit': config.scripts.toolkit,
   },
   output: {
     path: path.resolve(__dirname, config.dest, 'assets'),
@@ -116,7 +132,7 @@ module.exports = {
     filename: '[name].[chunkhash].js',
   },
   devtool: 'source-map',
-  plugins: getPlugins(config.dev),
+  plugins: getPlugins(),
   module: {
     loaders: getLoaders(),
   }

@@ -1,7 +1,9 @@
 /**
  * Toolkit styles
  */
-
+ @import '~foundation-sites/scss/settings/settings';
+ @import '~foundation-sites/scss/foundation';
+ @include foundation-everything();
 body {
   font-family: sans-serif;
 }

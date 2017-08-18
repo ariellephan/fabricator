@@ -3,9 +3,9 @@
  * @author Luke Askew
  * Class selectors are namespaced with "f-"
  */
-@import 'settings';
+@import '~foundation-sites/scss/settings/settings';
 @import '~foundation-sites/scss/foundation';
-
+@include foundation-everything();
 @import 'partials/variables';
 @import 'partials/code';
 @import 'partials/color-chips';
