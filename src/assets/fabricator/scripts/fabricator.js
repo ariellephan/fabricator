@@ -1,5 +1,6 @@
 'use strict';
-
+import $ from 'jquery';
+import './lib/foundation-explicit-pieces';
 require('./prism');
 require('../styles/fabricator.scss');
 
@@ -363,7 +364,7 @@ fabricator.setInitialMenuState = function () {
  * Initialization
  */
 (function () {
-
+	$(document).foundation();
 	// invoke
 	fabricator
 		.setInitialMenuState()
