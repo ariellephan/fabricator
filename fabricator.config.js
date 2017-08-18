@@ -1,10 +1,11 @@
+const deepmerge = require('deepmerge');
 const assembler = require('fabricator-assemble');
-const fabricator = (userConfig = {}, userAssembler = {}) => {
-  const config = Object.assign({
+const fabricator = (basePath = './src/', userConfig = {}, userAssembler = {}) => {
+  const config = deepmerge({
     dev: !(process.env.NODE_ENV === "production"),
     scripts: {
-      fabricator: './src/assets/fabricator/scripts/fabricator.js',
-      toolkit: './src/assets/toolkit/scripts/toolkit.js',
+      fabricator: basePath + 'assets/fabricator/scripts/fabricator.js',
+      toolkit: basePath + 'assets/toolkit/scripts/toolkit.js',
     },
     images: {
       toolkit: ['src/assets/toolkit/images/**/*', 'src/favicon.ico']
@@ -13,7 +14,10 @@ const fabricator = (userConfig = {}, userAssembler = {}) => {
   }, userConfig);
   let assetMap = {};
   const assemblerConfig = () => {
-    return Object.assign({
+    return deepmerge({
+      layouts: [basePath + 'views/layouts/*'],
+      layoutIncludes: [basePath + 'views/layouts/includes/*'],
+      views: [basePath + 'views/styleguide/**/*', basePath + 'views/pages/**/*'],
       logErrors: config.dev,
       dest: config.dest,
       buildData: Object.assign({
