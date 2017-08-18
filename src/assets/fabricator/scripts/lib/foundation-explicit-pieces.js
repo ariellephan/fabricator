@@ -100,4 +100,4 @@ Foundation.plugin(Sticky, 'Sticky');
 //
 // Foundation.plugin(ResponsiveAccordionTabs, 'ResponsiveAccordionTabs');
 
-module.exports = Foundation;
+export default Foundation;
