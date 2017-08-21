@@ -16,6 +16,63 @@ layout: styleguide
 
 <p>The production build script will output each page as a .cshtml partial wrapped in the partials.cshtml layout found at <code>./src/views/layouts/partials.cshtml</code></p>
 
+<h3>Partial Variables</h3>
+
+<p>Partials created with front-matter for default content can reference the front-matter directly.</p>
+
+<pre class="language-markup">
+  ---
+  value: Some Value
+  ---
+  \{{value}}
+</pre>
+
+<p>When the styleguide is compiled, variables defined in front-matter are renamed to namespace the component.</p>
+
+<pre class="language-markup">
+\{{component.value}}
+</pre>
+
+<p>To override these variables when included in other partials, you must define the context that maps directly to the namespaced variables</p>
+
+<pre class="language-markup">
+  ---
+  context:
+    component:
+      value: New Value
+  ---
+  \{{> component context}}
+</pre>
+
+<p>If partials are grouped by folders, the front-matter and partial name are delimited with <code>-</code> or <code>.</code></p>
+
+<pre class="language-markup">
+---
+context:
+  buttons-default:
+    value: Submit
+---
+\{{> buttons.default context}}
+</pre>
+
+<h3>Partial Blocks</h3>
+
+<p>Fabricator doesn't understand partial blocks until the partial is included in another partial. Fallback content needs to be defined whenever a partial block is used.
+
+<pre class="language-markup">
+  \{{#> @partial-block }}
+  Content
+  \{{/@partial-block}}
+</pre>
+
+<p>Now the component will render its fallback content when directly viewed, and can be overwritten when included.</p>
+
+<pre class="language-markup">
+  \{{#> component }}
+  New content
+  \{{/component}}
+</pre>
+
 <h2>Taxonomy</h2>
 
 <h3>Elements</h3>
